@@ -1,0 +1,542 @@
+<div class="dashboard-container">
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+
+  <div class="header">
+
+    <div>
+      <h1>📚 Library Management System</h1>
+
+      @if(user) {
+        <p class="welcome-text">
+          Welcome, {{ user.name }}
+        </p>
+      }
+    </div>
+
+    <button class="logout-btn" (click)="logout()">
+      Logout
+    </button>
+
+  </div>
+
+
+  <!-- =========================
+       DASHBOARD SUMMARY
+  ========================== -->
+
+  <div class="summary-grid">
+
+    <div class="summary-card">
+
+      <div class="summary-icon">
+        📚
+      </div>
+
+      <div>
+        <p>Total Books</p>
+        <h2>{{ books.length }}</h2>
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-icon">
+        📖
+      </div>
+
+      <div>
+        <p>Available Books</p>
+        <h2>{{ getAvailableBooksCount() }}</h2>
+      </div>
+
+    </div>
+
+
+    @if(role === 'USER') {
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          📋
+        </div>
+
+        <div>
+          <p>My Reservations</p>
+          <h2>{{ reservations.length }}</h2>
+        </div>
+
+      </div>
+
+    }
+
+
+    @if(role === 'ADMIN') {
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          👥
+        </div>
+
+        <div>
+          <p>Total Users</p>
+          <h2>{{ users.length }}</h2>
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+
+
+  <!-- =========================
+       ADMIN BOOK MANAGEMENT
+  ========================== -->
+
+  @if(role === 'ADMIN') {
+
+    <div class="section">
+
+      <h2>➕ Book Management</h2>
+
+      <app-add-book
+        [bookToEdit]="selectedBook"
+        (bookSaved)="onBookSaved()">
+      </app-add-book>
+
+    </div>
+
+  }
+
+
+  <!-- =========================
+       SEARCH
+  ========================== -->
+
+  <div class="section">
+
+    <input
+      class="search-box"
+      type="text"
+      placeholder="🔍 Search by Title or Author..."
+      [(ngModel)]="search"
+      (input)="searchBooks()">
+
+  </div>
+
+
+  <!-- =========================
+       USER RESERVATIONS
+  ========================== -->
+
+  @if(role === 'USER') {
+
+    <div class="section">
+
+      <div class="section-header">
+
+        <div>
+          <h2>📖 My Reservations</h2>
+
+          <p class="section-description">
+            View and manage your borrowed books
+          </p>
+        </div>
+
+        <button
+          class="primary-btn"
+          (click)="getReservations()">
+
+          Load Reservations
+
+        </button>
+
+      </div>
+
+
+      @if(reservations.length === 0) {
+
+        <div class="empty-state">
+
+          <div class="empty-icon">📚</div>
+
+          <h3>No Reservations</h3>
+
+          <p>You don't have any reservations yet.</p>
+
+        </div>
+
+      }
+
+
+      <div
+        class="card"
+        *ngFor="let reservation of reservations">
+
+        <div class="card-header">
+
+          <h3>
+            {{ reservation.book.title }}
+          </h3>
+
+          <span
+            class="status"
+            [class.active-status]="reservation.status === 'ACTIVE'"
+            [class.returned-status]="reservation.status === 'RETURNED'">
+
+            {{ reservation.status }}
+
+          </span>
+
+        </div>
+
+        <p>
+          <strong>Author:</strong>
+          {{ reservation.book.author }}
+        </p>
+
+        <p>
+          <strong>Reservation ID:</strong>
+          {{ reservation.id }}
+        </p>
+
+        @if(reservation.status === 'ACTIVE') {
+
+          <button
+            class="return-btn"
+            (click)="returnBook(reservation.id)">
+
+            ↩ Return Book
+
+          </button>
+
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- =========================
+       ADMIN RESERVATIONS
+  ========================== -->
+
+  @if(role === 'ADMIN') {
+
+    <div class="section">
+
+      <div class="section-header">
+
+        <div>
+
+          <h2>📑 All Reservations</h2>
+
+          <p class="section-description">
+            Monitor all book reservations
+          </p>
+
+        </div>
+
+        <button
+          class="primary-btn"
+          (click)="getAllReservations()">
+
+          View Reservations
+
+        </button>
+
+      </div>
+
+
+      @if(allReservations.length === 0) {
+
+        <div class="empty-state">
+
+          <div class="empty-icon">📋</div>
+
+          <h3>No Reservations Found</h3>
+
+          <p>There are currently no reservations.</p>
+
+        </div>
+
+      }
+
+
+      <div
+        class="card"
+        *ngFor="let reservation of allReservations">
+
+        <div class="card-header">
+
+          <h3>
+            {{ reservation.book.title }}
+          </h3>
+
+          <span
+            class="status"
+            [class.active-status]="reservation.status === 'ACTIVE'"
+            [class.returned-status]="reservation.status === 'RETURNED'">
+
+            {{ reservation.status }}
+
+          </span>
+
+        </div>
+
+        <p>
+          <strong>User:</strong>
+          {{ reservation.user.name }}
+        </p>
+
+        <p>
+          <strong>Email:</strong>
+          {{ reservation.user.email }}
+        </p>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- =========================
+       ADMIN USERS
+  ========================== -->
+
+  @if(role === 'ADMIN') {
+
+    <div class="section">
+
+      <div class="section-header">
+
+        <div>
+
+          <h2>👥 Users</h2>
+
+          <p class="section-description">
+            Manage registered library users
+          </p>
+
+        </div>
+
+        <button
+          class="primary-btn"
+          (click)="getUsers()">
+
+          View Users
+
+        </button>
+
+      </div>
+
+
+      @if(users.length === 0) {
+
+        <div class="empty-state">
+
+          <div class="empty-icon">👤</div>
+
+          <h3>No Users Found</h3>
+
+          <p>No users are currently available.</p>
+
+        </div>
+
+      }
+
+
+      <div
+        class="card"
+        *ngFor="let u of users">
+
+        <div class="card-header">
+
+          <h3>{{ u.name }}</h3>
+
+          <span class="role-badge">
+            {{ u.role }}
+          </span>
+
+        </div>
+
+        <p>
+          <strong>Email:</strong>
+          {{ u.email }}
+        </p>
+
+        @if(u.id !== user.id) {
+
+          <button
+            class="delete-btn"
+            (click)="deleteUser(u.id)">
+
+            🗑 Delete User
+
+          </button>
+
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- =========================
+       BOOKS
+  ========================== -->
+
+  <div class="section">
+
+    <div class="section-header">
+
+      <div>
+
+        <h2>📚 Books</h2>
+
+        <p class="section-description">
+          {{ filteredBooks.length }} books displayed
+        </p>
+
+      </div>
+
+    </div>
+
+
+    @if(filteredBooks.length === 0) {
+
+      <div class="empty-state">
+
+        <div class="empty-icon">🔍</div>
+
+        <h3>No Books Found</h3>
+
+        <p>
+          Try searching with a different title or author.
+        </p>
+
+      </div>
+
+    }
+
+
+    <div class="book-grid">
+
+      <div
+        class="book-card"
+        *ngFor="let book of filteredBooks">
+
+
+        <!-- Book Icon -->
+
+        <div class="book-icon">
+          📖
+        </div>
+
+
+        <h3>
+          {{ book.title }}
+        </h3>
+
+
+        <p class="author">
+          By {{ book.author }}
+        </p>
+
+
+        <div class="book-details">
+
+          <p>
+            <strong>ISBN</strong>
+            <span>{{ book.isbn }}</span>
+          </p>
+
+          <p>
+            <strong>Available Copies</strong>
+
+            <span
+              [class.available]="book.availableCopies > 0"
+              [class.unavailable]="book.availableCopies === 0">
+
+              {{ book.availableCopies }}
+
+            </span>
+
+          </p>
+
+        </div>
+
+
+        <!-- Buttons -->
+
+        <div class="button-group">
+
+          @if(role === 'ADMIN') {
+
+            <button
+              class="edit-btn"
+              (click)="editBook(book)">
+
+              ✏️ Edit
+
+            </button>
+
+            <button
+              class="delete-btn"
+              (click)="deleteBook(book.id)">
+
+              🗑 Delete
+
+            </button>
+
+          }
+
+
+          @if(role === 'USER') {
+
+            @if(book.availableCopies > 0) {
+
+              <button
+                class="reserve-btn"
+                (click)="reserveBook(book.id)">
+
+                📖 Reserve Book
+
+              </button>
+
+            }
+            @else {
+
+              <button
+                class="unavailable-btn"
+                disabled>
+
+                ❌ Not Available
+
+              </button>
+
+            }
+
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+                         

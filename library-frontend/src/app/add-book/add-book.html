@@ -1,0 +1,86 @@
+<div class="add-book-container">
+
+  <div class="form-header">
+    <div class="icon">📚</div>
+
+    <div>
+      <h2>{{ editBookId ? 'Edit Book' : 'Add New Book' }}</h2>
+      <p>
+        {{ editBookId
+          ? 'Update the book information below'
+          : 'Enter the details to add a new book'
+        }}
+      </p>
+    </div>
+  </div>
+
+  <div class="form-body">
+
+    <div class="form-group">
+      <label for="title">Book Title</label>
+
+      <input
+        id="title"
+        type="text"
+        placeholder="Enter book title"
+        [(ngModel)]="title">
+    </div>
+
+    <div class="form-group">
+      <label for="author">Author</label>
+
+      <input
+        id="author"
+        type="text"
+        placeholder="Enter author name"
+        [(ngModel)]="author">
+    </div>
+
+    <div class="form-group">
+      <label for="isbn">ISBN</label>
+
+      <input
+        id="isbn"
+        type="text"
+        placeholder="Enter ISBN number"
+        [(ngModel)]="isbn">
+    </div>
+
+    <div class="form-group">
+      <label for="copies">Available Copies</label>
+
+      <input
+        id="copies"
+        type="number"
+        min="1"
+        placeholder="Enter number of copies"
+        [(ngModel)]="availableCopies">
+    </div>
+
+    <div class="button-group">
+
+      <button
+        class="save-btn"
+        (click)="saveBook()">
+
+        {{ editBookId ? 'Update Book' : 'Add Book' }}
+
+      </button>
+
+      @if(editBookId){
+
+        <button
+          class="cancel-btn"
+          (click)="cancelEdit()">
+
+          Cancel
+
+        </button>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>

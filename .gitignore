@@ -1,0 +1,29 @@
+# Java and Maven
+target/
+*.class
+*.log
+
+# Angular
+node_modules/
+dist/
+.angular/
+
+# IDE files
+.vscode/
+.project
+.classpath
+.settings/
+.factorypath
+
+# Local secrets
+.env
+.env.*
+!.env.example
+application-local.properties
+application-local.yml
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+**/src/main/resources/application.properties
